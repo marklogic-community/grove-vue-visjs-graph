@@ -2,7 +2,7 @@
 
 This library provides Vue components providing an interactive graph
 visualization of nodes and edges. It is a wrapper for the [vanilla JS
-ml-visjs-graph.js library](https://github.com/grtjn/ml-visjs-graph.js), which
+`ml-visjs-graph` library](https://github.com/grtjn/ml-visjs-graph.js), which
 itself is based on the [VisJS Network library](http://visjs.org/docs/network/).
 
 The library is part of the MarkLogic Grove project, but could work in any Vue application.
@@ -13,152 +13,183 @@ First, add the `grove-vue-visjs-graph` dependency via npm. (In a Grove Project, 
 
     npm install --save git+https://project.marklogic.com/repo/scm/~gjosten/grove-vue-visjs-graph.git
 
-Then, in your application, import the `VisjsGraph` and start to use it.
+For now you also need to install ml-visjs-graph directly:
+
+    npm install --save ml-visjs-graph
+
+Then, in your Vue application, import the `VisjsGraph` as well as necessary styling:
 
 ```javascript
-// ... other imports ...
-import { GraphContainer } from 'grove-react-visjs-graph';
+// Either add this to ui/src/main.js to add it globally:
+import VisjsGraph from 'grove-vue-visjs-graph';
+import 'vis/dist/vis.css';
+import 'ml-visjs-graph/less/ml-visjs-graph.js.less';
+Vue.component(VisjsGraph.name, VisjsGraph);
 
-// ...
-// ... other stuff in the parent component
-  <GraphContainer startingUris={['/sample-data/data-268.json']} />
-// ...
-```
+// Or do this in a Vue page/component to add it there only:
+import VisjsGraph from 'grove-vue-visjs-graph';
+import 'vis/dist/vis.css';
+import 'ml-visjs-graph/less/ml-visjs-graph.js.less';
 
-The `startingUris` refers to RDF URIs (see the "Data Source" section below for details.)
-
-The `GraphContainer` is a convenience container, which attempts to fetch graph data and pass it down to the more generic `Graph` component. The follow section describes the default behavior of the `GraphContainer` and how to customize it.
-
-However, you may also choose not to use the `GraphContainer` at all, but instead to use your own container together with the more generic `Graph` component. There is a section on using the `Graph` component further below.
-
-## `GraphContainer`
-
-### `GraphContainer` Defaults
-
-#### Data Source
-
-The provided `GraphContainer` calls a backend service, providing subject IRIs as a parameter. By default, it expects to access a MarkLogic REST endpoint at `/v1/resources/visjs`. It provides an `rs:subjects` array parameter to this endpoint, and expects to receive back the Visjs-style serialization of nodes and edges.
-
-A usable example of such an endpoint is available in the [mlpm-visjs-graph repository](https://github.com/patrickmcelwee/mlpm-visjs-graph). You will need to install [visjs.xqy](https://github.com/patrickmcelwee/mlpm-visjs-graph/blob/master/visjs.xqy) as a REST resource and [visjs-lib.xqy](https://github.com/patrickmcelwee/mlpm-visjs-graph/blob/master/visjs-lib.xqy) as a server-side javascript module. You can customize the behavior by editing these files directly, particularly the SPARQL queries in visjs-lib.xqy.
-
-See the README in the mlpm-visjs-graph library on how to install it on MarkLogic.
-
-You will then either have to setup an endpoint in your Grove middle-tier that calls this REST extension, or add a legacy proxy (not recommended in general). (Eventually, we hope to spec out and ship a middle-tier endpoint.)
-
-To add a proxy in an out-of-the-box Grove middle-tier, open `routes/index.js` and inside the `whitelist`, add:
-
-    {
-      endpoint: '/resources/visjs,
-      methods: ['get'],
-      authed: true
-    }
-
-NOTE: Eventually, we would like to replace this library with a default Grove middle-tier endpoint.
-
-#### Events
-
-The provided `GraphContainer` also sets up a single doubleClick event, which fetches nodes and edges for the node that was double-clicked and adds them to the graph.
-
-The underlying ml-visjs-graph.ng library also sets up an `afterDrawing` event, which draws a custom orb in the top-left of each node, which contains a number specifying how many relationships that node has (or whatever else you wish to interpret the `linkCount` property on each node to mean).
-
-### `GraphContainer` Customization
-
-### Data Source
-
-To change the basic behavior pass in a `fetchData()` function, which takes an array of URIs as its only argument and returns a Visjs-style serialization of nodes and edges.
-
-```javascript
-const myFetchData = uris => {
-  // Inspect the source of visjs examples to see what properties nodes and
-  // edges can have. Note that you can use arrays and do not need to
-  // instantiate a visjs DataSet.
-  // http://visjs.org/network_examples.html
-  // Normally, of course, you will call out to a data service in MarkLogic,
-  // a MarkLogic Grove middle-tier, or some other backend API.
-  // Note that you need to return a Promise.
-  return Promise.resolve({
-    nodes: [
-      {
-        id: '1',
-        label: 'The Number 1!',
-        group: 'number', // optional
-        linkCount: 8 // we look for this to add an small orb to the icon
-      },
-      {
-        id: '2',
-        label: 'The Only Even Prime!',
-        group: 'number', // optional
-        linkCount: 16 // we look for this to add an small orb to the icon
-      }
-    ],
-    edges: [
-      {
-        id: 'more-2-1',
-        label: 'moreThan',
-        from: '2',
-        to: '1'
-      }
-    ]
-  });
+export default {
+  ...,
+  components: {
+    ...,
+    VisjsGraph
+  },
+  ...
 };
-
-// ...
-  <GraphContainer
-    startingUris={['https://marklogic.com#MarkLogicGrove']}
-    fetchData={myFetchData}
-  />
-// ...
 ```
 
-See the VisJS [nodes](http://visjs.org/docs/network/nodes.html) and [edges](http://visjs.org/docs/network/edges.html) documentation for additional VisJS properties you can add. You may also add additional, non-VisJS properties if you wish (for example, to provide content to a summary pane when a node is clicked).
+After that you can start using the directly, which could look for example like this:
 
-### Events
-
-VisJS provides [many event hooks for you to add behavior or draw on the canvas](http://visjs.org/docs/network/#Events). See above for the events added by default. You can override these or add additional event hooks by passing an object as an `events` option to the `<GraphContainer />`. (If you want to remove one of the event hooks defined in this library, you will have to specify an empty, 'no-op' function.)
-
-For example, here is an 'oncontext' event handler (fired when you right-click on a node):
-
-```javascript
-<GraphContainer
-  startingUris={['https://marklogic.com#MarkLogicGrove']}
-  events={{
-    oncontext: params => {
-      params.event.preventDefault();
-      console.log('Visjs right-click action called with params: ', params);
-    }
-  }}
-/>
+```html
+            <visjs-graph :nodes="nodes" :edges="edges" :options="graphOptions" layout="standard" :events="graphEvents"></visjs-graph>
 ```
 
-### Display options
+## Recommended setup for grove-vue-template (development branch!)
 
-TODO: add physics on-off, physics solver and layout as props to Graph
+It is easiest to import the component globally via main.js as described in previous section. Then add this to the template of the DetailPage (`ui/src/views/DetailPage.vue`) within the existing `b-tabs`, at last position:
 
-VisJS provides a [robust set of options to change how your graph is displayed](http://visjs.org/docs/network/#options). We have specified a default set of options in the [underlying ml-visjs-graph.js library](https://github.com/grtjn/ml-visjs-graph.js/blob/master/src/mlvisjs.global.js#L50). You can override these by passing a VisJS options object as an `options` prop to your `<GraphContainer />`. (Only the specific options you name will be changed. If you want to return to the VisJS default for an option that we have set in the visjsGraphCtrl, you will have to specify that explicitly.)
+```html
+          <b-tab title="Graph”>
+            <visjs-graph v-if="tabIndex === 3" :nodes="nodes" :edges="edges" :options="graphOptions" layout="standard" :events="graphEvents"></visjs-graph>
+          </b-tab>
+```
 
-For example:
+Note that `tabIndex === 3` to enforce that the graph is only painted when the tab is open. The graph won't show properly if painted while hidden, as it relies on panel sizes and such.
+
+At minimum, you need to initialize `nodes`, `edges`, `graphOptions`, and `graphEvents`. Though, it can be convenient to use `nodesCache`, and `edgesCache`, and use so-called computed `nodes` and `edges`. The cache object can be used to quickly check if a node or edge exists, and you can fetch its details very quickly from it. It would look like this:
 
 ```javascript
-<GraphContainer
-  startingUris={['https://marklogic.com#MarkLogicGrove']}
-  options={{
-    edges: {
-      color: {
-        color: 'red'
-      }
+  data() {
+    return {
+      ...,
+      nodesCache: {},
+      edgesCache: {},
+      graphOptions: {},
+      graphEvents: {}
+    };
+  },
+  computed: {
+    ...,
+    nodes() {
+      return Object.values(this.nodesCache);
     },
-    nodes: {
-      color: {
-        background: 'orange'
-      }
+    edges() {
+      return Object.values(this.edgesCache);
     }
-  }}
-/>
+  }
 ```
 
-#### Specify Layout
+All component properties are automatically monitored for changes via the `Observer` pattern. Computed properties are automatically recalculated when a depending property gets changed, but really only when it changes!
 
-The underlying ml-visjs-graph.js library provides a few different layout options. Those include:
+## Adding interaction with MarkLogic
+
+The component includes a library that can make appropriate MarkLogic calls to `/v1/graphs/sparql`. Eventually, we would like to replace this library with a default Grove middle-tier endpoint. For now, you'll need to enable the legacy proxy (the `whitelistProxyRoute` from the `legacy-routes` package) in Grove. You can find the config in `middle-tier/routes/index.js`:
+
+```javascript
+const enableLegacyProxy = true;
+```
+
+In that same file, you configure that legacy proxy. Add or uncomment at least the following:
+
+```javascript
+        {
+          endpoint: '/graphs/sparql',
+          methods: ['post'], // no need for 'get'
+          authed: true
+        }
+```
+
+And make sure commas between other endpoint rules are applied correctly.
+
+When you have the middle-tier running in development mode (with a straight `npm start`), it will restart automatically. If not, restart it manually to enable the change.
+
+Next, you can start using it in the DetailPage. Start with importing the GraphApi, near the top of the script tag inside `ui/src/views/DetailPage.vue`:
+
+```javascript
+import GraphApi from 'grove-vue-visjs-graph/src/api/GraphApi.js';
+```
+
+Next, you add a method to update the nodes and edges, just for convenience:
+
+```javascript
+  methods: {
+    ...,
+    updateGraph(response) {
+      const self = this;
+      self.nodesCache = response.nodes;
+      self.edgesCache = response.edges;
+    }
+  }
+```
+
+And then you use it to first initialize the graph by feeding it the result of `GraphApi.expand`:
+
+```javascript
+  created() {
+    const self = this;
+    this.$store
+      .dispatch('crud/' + self.type + '/view', {
+        id: self.id,
+        view: 'metadata'
+      })
+      .then(function(response) {
+        if (!response.isError) {
+          var metadata = JSON.parse(response.response);
+
+          ...
+
+          GraphApi.expand([metadata.uri]).then(self.updateGraph);
+        }
+      });
+  },
+```
+
+Next, do the same in graphEvents to intercept double-click:
+
+```javascript
+      graphEvents: {
+        doubleClick(params) {
+          if (params.nodes[0]) {
+            GraphApi.expand(params.nodes, self.nodesCache, self.edgesCache).then(self.updateGraph);
+          }
+        }
+      }
+```
+
+Note that nodesCache and edgesCache are passed in here, which is needed to prevent edges from being added multiple times, and getting miscounted.
+
+VisJS provides many event hooks for you to add behavior or draw on the canvas, `doubleClick` is just one of them. See the [VisJS documentation](http://visjs.org/docs/network/#Events) for other events. `click` and `onContext` are useful ones as well, and you can inspect the event argument to look for modifier keys.
+
+## Styling the graph
+
+To give some pointers about polishing how the graph looks, and feels: you can do a lot of tweaking with graphOptions. Most interesting is setting a different default, and leveraging groups. The GraphApi by default looks for `rdf:type` links, and uses the object iri as group name for the nodes. Something like the following gives you nice fancy fontawesome icons when running this against the sample-data that comes with the grove ui templates:
+
+```javascript
+      graphOptions: {
+        nodes: {
+          shape: 'dot'
+        },
+        groups: {
+          'http://xmlns.com/foaf/0.1/Person': {
+            shape: 'icon',
+            icon: {
+              face: 'FontAwesome',
+              code: '\uf007', // fa-user icon
+              color: 'green'
+            }
+          }
+        }
+      },
+```
+
+For more detail on available options, see: [http://visjs.org/docs/network/#options](http://visjs.org/docs/network/#options)
+
+### Directive options
+
+Out of the box, grove-vue-visjs-graph does not add any defaults on top of visjs, but ml-visjs-graph does. It tries to bundle some experience with bigger graphs, and large updates. You can override however, and you can also influence how the graph is displayed initially. ml-visjs-graph provides a ui toolbar that allows enabling/disabling physics, and picking a different layout for instance, but you can also influence them with directive options. One for layout is given above. A full list of available layouts include:
 
 - "standard" (force-directed)
 - "hierarchyTop"
@@ -166,31 +197,9 @@ The underlying ml-visjs-graph.js library provides a few different layout options
 - "hierarchyLeft"
 - "hierarchyRight"
 
-You can specify which layout you want, by passing in, for example,
-`layout="'hierarchyTop'"`. The default is 'standard'.
+Next to that you can specify physics, or just turn it off by passing in `physics="false"`.
 
-```javascript
-<GraphContainer
-  startingUris={['https://marklogic.com#MarkLogicGrove']}
-  layout={'hierarchyTop'}
-/>
-```
+## Further Reading
 
-#### Specify Physics
-
-You can also specify a different physics for the 'standard' (default) layout: `physics={ 'barnesHut' }`
-
-Or turn off physics initially with `physics={false}`.
-
-## `Graph` Component
-
-Instead of using the provided `GraphContainer`, you can use the lower-level `Graph` component instead, which gives you more control on how to fetch data to initialize the graph and to update it. See the `GraphContainer` itself for an example of how to use it.
-
-It takes props similar to the `GraphContainer` for events and display options.
-
-In addition, it takes a `data` prop, which is additive. Any new data gets added to the existing visjs graph.
-
-## More Information
-
-I recommend becoming familiar with the [documentation for a VisJS network](http://visjs.org/docs/network/).
+It is recommended to becoming familiar with the [documentation for a VisJS network](http://visjs.org/docs/network/) to take full benefit of this component.
 
