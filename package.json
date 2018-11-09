@@ -1,0 +1,59 @@
+{
+  "name": "grove-vue-visjs-graph",
+  "version": "0.0.1",
+  "description": "Vue component to visualize RDF relationships using Vis.js",
+  "main": "dist/grove-vue-visjs-graph.umd.js",
+  "module": "dist/grove-vue-visjs-graph.esm.js",
+  "unpkg": "dist/grove-vue-visjs-graph.min.js",
+  "browser": {
+    "./sfc": "src/grove-vue-visjs-graph.vue"
+  },
+  "scripts": {
+    "lint": "vue-cli-service lint",
+    "lint:fix": "vue-cli-service lint --fix",
+    "test": "npm run test:unit",
+    "test:unit": "vue-cli-service test:unit",
+    "build": "npm run build:umd && npm run build:es && npm run build:unpkg",
+    "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/grove-vue-visjs-graph.umd.js",
+    "build:es": "rollup --config build/rollup.config.js --format es --file dist/grove-vue-visjs-graph.esm.js",
+    "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/grove-vue-visjs-graph.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://project.marklogic.com/repo/scm/~gjosten/grove-vue-visjs-graph.git"
+  },
+  "keywords": [
+    "MarkLogic",
+    "Grove",
+    "vue",
+    "vis",
+    "graph",
+    "RDF",
+    "SPARQL",
+    "visualization",
+    "UI"
+  ],
+  "author": "Geert Josten",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@vue/cli-plugin-eslint": "^3.0.3",
+    "@vue/cli-plugin-pwa": "^3.0.3",
+    "@vue/cli-plugin-unit-jest": "^3.0.3",
+    "@vue/cli-service": "^3.0.3",
+    "@vue/eslint-config-prettier": "^4.0.0",
+    "@vue/test-utils": "^1.0.0-beta.20",
+    "less": "^3.0.4",
+    "less-loader": "^4.1.0",
+    "rollup": "^0.67.0",
+    "rollup-plugin-buble": "^0.19.2",
+    "rollup-plugin-vue": "^4.3.2",
+    "vue-template-compiler": "^2.5.17"
+  },
+  "peerDependencies": {},
+  "dependencies": {
+    "es6-promise": "^4.2.5",
+    "isomorphic-fetch": "^2.2.1",
+    "ml-visjs-graph": "^0.5.1",
+    "vue": "^2.5.17"
+  }
+}
