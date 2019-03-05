@@ -8,6 +8,7 @@ module.exports = {
       'jest-transform-stub',
     '^.+\\.jsx?$': 'babel-jest'
   },
+  transformIgnorePatterns: ['<rootDir>/node_modules/'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
   },
@@ -15,5 +16,9 @@ module.exports = {
   testMatch: [
     '**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)'
   ],
-  testURL: 'http://localhost/'
+  testURL: 'http://localhost/',
+  testEnvironment: "jest-environment-jsdom-thirteen",
+  collectCoverage: true,
+  collectCoverageFrom: ['**/*.{js,vue}', '!**/node_modules/**'],
+  coverageReporters: ['html', 'text-summary']
 };

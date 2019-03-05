@@ -77,7 +77,7 @@ export default {
   },
   watch: {
     edges: {
-      handler: function () {
+      handler: function() {
         if (this.graph) {
           this.graph.network.setData(null, null, this.cleanEdges, null);
         }
@@ -95,7 +95,7 @@ export default {
       }
     },
     nodes: {
-      handler: function () {
+      handler: function() {
         if (this.graph) {
           this.graph.network.setData(this.cleanNodes, null, null, null);
         }

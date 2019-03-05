@@ -1,11 +1,13 @@
 // Import vue component
-import component from './components/visjs-graph.vue';
+import VisjsGraph from './components/visjs-graph.vue';
+import VisjsTimeline from './components/visjs-timeline.vue';
 
 // Declare install function executed by Vue.use()
 export function install(Vue) {
   if (install.installed) return;
   install.installed = true;
-  Vue.component(component.name, component);
+  Vue.component(VisjsGraph.name, VisjsGraph);
+  Vue.component(VisjsTimeline.name, VisjsTimeline);
 }
 
 // Create module definition for Vue.use()
@@ -26,4 +28,5 @@ if (GlobalVue) {
 }
 
 // To allow use as module (npm/webpack/etc.) export component
-export default component;
+export default VisjsGraph;
+export { VisjsGraph, VisjsTimeline };
