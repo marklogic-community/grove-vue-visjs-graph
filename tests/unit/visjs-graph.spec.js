@@ -5,7 +5,8 @@ describe('visjs-graph.vue', () => {
   it('mounts without errors', () => {
     const nodes = [];
     const edges = [];
-    const wrapper = shallowMount(VisjsGraph, {
+    /*const wrapper =*/
+    shallowMount(VisjsGraph, {
       propsData: { nodes, edges }
     });
     expect(1).toBe(1);

@@ -17,7 +17,7 @@ module.exports = {
     '**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)'
   ],
   testURL: 'http://localhost/',
-  testEnvironment: "jest-environment-jsdom-thirteen",
+  testEnvironment: 'jest-environment-jsdom-thirteen',
   collectCoverage: true,
   collectCoverageFrom: ['**/*.{js,vue}', '!**/node_modules/**'],
   coverageReporters: ['html', 'text-summary']
