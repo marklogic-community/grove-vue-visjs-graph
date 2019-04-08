@@ -1,6 +1,6 @@
 {
   "name": "grove-vue-visjs-graph",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Vue component to visualize RDF relationships using Vis.js",
   "main": "dist/grove-vue-visjs-graph.umd.js",
   "module": "dist/grove-vue-visjs-graph.esm.js",
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://project.marklogic.com/repo/scm/~gjosten/grove-vue-visjs-graph.git"
+    "url": "git@github.com:marklogic-community/grove-vue-visjs-graph.git"
   },
   "keywords": [
     "MarkLogic",

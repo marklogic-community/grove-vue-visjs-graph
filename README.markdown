@@ -44,12 +44,17 @@ export default {
 
 After that you can start using the directly, which could look for example like this:
 
+Graph:
 ```html
             <visjs-graph :nodes="nodes" :edges="edges" :options="graphOptions" layout="standard" :events="graphEvents"></visjs-graph>
+```
+
+Timeline:
+```html
             <visjs-timeline :items="items" :groups="groups" :options="timelineOptions" :events="timelineEvents"></visjs-timeline>
 ```
 
-## Recommended setup for grove-vue-template for VisjsGraph
+## Recommended setup for grove-vue-template for VisjsGraph and VisjsTimeline
 
 It is easiest to import the component globally via main.js as described in previous section. Then add this to the template of the DetailPage (`ui/src/views/DetailPage.vue`) within the existing `b-tabs`, at last position:
 
@@ -59,7 +64,11 @@ It is easiest to import the component globally via main.js as described in previ
           </b-tab>
 ```
 
+Note: same might apply to Timeline, haven't tested yet.
+
 Note that `tabIndex === 3` to enforce that the graph is only painted when the tab is open. The graph won't show properly if painted while hidden, as it relies on panel sizes and such.
+
+Graph:
 
 At minimum, you need to initialize `nodes`, `edges`, `graphOptions`, and `graphEvents`. Though, it can be convenient to use `nodesCache`, and `edgesCache`, and use so-called computed `nodes` and `edges`. The cache object can be used to quickly check if a node or edge exists, and you can fetch its details very quickly from it. It would look like this:
 
@@ -80,6 +89,31 @@ At minimum, you need to initialize `nodes`, `edges`, `graphOptions`, and `graphE
     },
     edges() {
       return Object.values(this.edgesCache);
+    }
+  }
+```
+
+Timeline:
+
+At minimum, you need to initialize `items`, `groups`, `timelineOptions`, and `timelineEvents`. Though, it can be convenient to use `itemsCache`, and `groupsCache`, and use so-called computed `items` and `groups`. The cache object can be used to quickly check if an item or a group exists, and you can fetch its details very quickly from it. It would look like this:
+
+```javascript
+  data() {
+    return {
+      ...,
+      itemsCache: {},
+      groupsCache: {},
+      timelineOptions: {},
+      timelineEvents: {}
+    };
+  },
+  computed: {
+    ...,
+    items() {
+      return Object.values(this.itemsCache);
+    },
+    groups() {
+      return Object.values(this.groupsCache);
     }
   }
 ```
