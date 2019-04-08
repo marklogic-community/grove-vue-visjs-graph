@@ -1,7 +1,7 @@
 {
-  "name": "grove-vue-visjs-graph",
+  "name": "@marklogic-community/grove-vue-visjs-graph",
   "version": "0.0.2",
-  "description": "Vue component to visualize RDF relationships using Vis.js",
+  "description": "Vue component to visualize RDF relationships and Timelines using Vis.js",
   "main": "dist/grove-vue-visjs-graph.umd.js",
   "module": "dist/grove-vue-visjs-graph.esm.js",
   "unpkg": "dist/grove-vue-visjs-graph.min.js",
@@ -35,6 +35,9 @@
   ],
   "author": "Geert Josten",
   "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/marklogic-community/grove-vue-visjs-graph/issues"
+  },
   "devDependencies": {
     "@babel/core": "^7.3.4",
     "@vue/cli-plugin-eslint": "^3.4.1",
