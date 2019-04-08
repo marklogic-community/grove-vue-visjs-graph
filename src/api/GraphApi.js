@@ -59,30 +59,34 @@ function filterStrIris(iris) {
 export default {
   name: 'GraphApi',
   expand(iris, nodes, edges) {
-    if (!iris || !iris.length) {
-      return new Promise(resolve => resolve({ nodes: [], edges: [] }));
-    }
+    var newIris = [];
 
+    iris = iris || [];
     nodes = nodes || {};
     edges = edges || {};
 
-    var semIris = filterSemIris(iris);
-    var strIris = filterStrIris(iris);
-    var bindings = {
-      'bind:subjects': semIris,
-      'bind:revSubjects': semIris,
-      'bind:subjects:string': strIris,
-      'bind:revSubjects:string': strIris
-    };
-
     iris.forEach(function(iri) {
       if (!nodes[iri]) {
+        newIris.push(iri);
         nodes[iri] = {
           id: iri,
           label: toLabel(iri)
         };
       }
     });
+
+    if (!newIris.length) {
+      return new Promise(resolve => resolve({ nodes: nodes, edges: edges }));
+    }
+
+    var semIris = filterSemIris(newIris);
+    var strIris = filterStrIris(newIris);
+    var bindings = {
+      'bind:subjects': semIris,
+      'bind:revSubjects': semIris,
+      'bind:subjects:string': strIris,
+      'bind:revSubjects:string': strIris
+    };
 
     return sparql(
       ' \
@@ -120,10 +124,10 @@ export default {
         OPTIONAL { \n\
           ?predicateIri a ?predicateType . \n\
         } \n\
-        FILTER( !(?predicateIri = (rdf:type, ssw:propagateType, skos:broader, skos:narrower, rdfs:label, skos:prefLabel, skos:altLabel)) ) \n\
+        FILTER( !(?predicateIri = (rdf:type, ssw:appliedType, skos:broader, skos:narrower, rdfs:label, skos:prefLabel, skos:altLabel)) ) \n\
         FILTER( ISIRI(?objectIri) ) \n\
       } LIMIT ' +
-        iris.length +
+        newIris.length +
         '00 \n\
     ',
       bindings
@@ -145,6 +149,7 @@ export default {
         }
 
         if (!nodes[fromId]) {
+          newIris.push(fromId);
           nodes[fromId] = {
             id: fromId,
             label: toLabel(fromId),
@@ -153,6 +158,7 @@ export default {
         }
 
         if (!nodes[toId]) {
+          newIris.push(toId);
           nodes[toId] = {
             id: toId,
             label: toLabel(toId),
@@ -170,9 +176,8 @@ export default {
         };
       });
 
-      var iris = Object.keys(nodes);
-      var semIris = filterSemIris(iris);
-      var strIris = filterStrIris(iris);
+      var semIris = filterSemIris(newIris);
+      var strIris = filterStrIris(newIris);
       var bindings = {
         'bind:subjects': semIris,
         'bind:subjects:string': strIris
@@ -205,22 +210,22 @@ export default {
             ?subjectIri skos:prefLabel ?subjectSkosLabel . \n\
           } \n\
           OPTIONAL { \n\
-            ?subjectIri ssw:propagateType ?subjectSkosType1 . \n\
+            ?subjectIri ssw:appliedType ?subjectSkosType1 . \n\
           } \n\
           OPTIONAL { \n\
-            ?subjectIri skos:broader/ssw:propagateType ?subjectSkosType2 . \n\
+            ?subjectIri skos:broader/ssw:appliedType ?subjectSkosType2 . \n\
           } \n\
           OPTIONAL { \n\
-            ?subjectIri skos:broader/skos:broader/ssw:propagateType ?subjectSkosType3 . \n\
+            ?subjectIri skos:broader/skos:broader/ssw:appliedType ?subjectSkosType3 . \n\
           } \n\
           OPTIONAL { \n\
-            ?subjectIri skos:broader/skos:broader/skos:broader/ssw:propagateType ?subjectSkosType4 . \n\
+            ?subjectIri skos:broader/skos:broader/skos:broader/ssw:appliedType ?subjectSkosType4 . \n\
           } \n\
           OPTIONAL { \n\
-            ?subjectIri skos:broader/skos:broader/skos:broader/skos:broader/ssw:propagateType ?subjectSkosType5 . \n\
+            ?subjectIri skos:broader/skos:broader/skos:broader/skos:broader/ssw:appliedType ?subjectSkosType5 . \n\
           } \n\
           OPTIONAL { \n\
-            ?subjectIri skos:broader/skos:broader/skos:broader/skos:broader/skos:broader/ssw:propagateType ?subjectSkosType6 . \n\
+            ?subjectIri skos:broader/skos:broader/skos:broader/skos:broader/skos:broader/ssw:appliedType ?subjectSkosType6 . \n\
           } \n\
           FILTER( ?subjectIri = ?subjects ) \n\
         } \n\
@@ -237,6 +242,8 @@ export default {
           var subjectLabel = toLabel(binding.subject.value);
 
           if (!nodes[subjectId]) {
+            // should not be reached?
+            newIris.push(subjectId);
             nodes[subjectId] = {
               id: subjectId,
               label: subjectLabel,
@@ -261,9 +268,8 @@ export default {
           nodes[edge.to].visibleLinks += 1;
         });
 
-        var iris = Object.keys(nodes);
-        var semIris = filterSemIris(iris);
-        var strIris = filterStrIris(iris);
+        var semIris = filterSemIris(newIris);
+        var strIris = filterStrIris(newIris);
         var bindings = {
           'bind:subjects': semIris,
           'bind:revSubjects': semIris,
@@ -292,7 +298,7 @@ export default {
               ?objectIri ?predicateIri ?subjectIri . \n\
               FILTER( ?subjectIri = ?revSubjects ) \n\
             } \n\
-            FILTER( !(?predicateIri = (rdf:type, ssw:propagateType, skos:broader, skos:narrower, rdfs:label, skos:prefLabel, skos:altLabel)) ) \n\
+            FILTER( !(?predicateIri = (rdf:type, ssw:appliedType, skos:broader, skos:narrower, rdfs:label, skos:prefLabel, skos:altLabel)) ) \n\
             FILTER( ISIRI(?objectIri) ) \n\
           } GROUP BY ?subjectIri \n\
         ',
@@ -307,6 +313,7 @@ export default {
             var node = nodes[subjectId];
 
             if (!node) {
+              // should not be reached!
               node = nodes[subjectId] = {
                 id: subjectId,
                 label: toLabel(subjectId),
