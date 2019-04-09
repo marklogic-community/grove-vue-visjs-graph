@@ -62,6 +62,8 @@ var script = {
 
       if (Array.isArray(obj)) {
         return obj.map(function (item) { return this$1.observerClean(item); });
+      } else if (Object.prototype.toString.call(obj) === '[object Date]') {
+        return new Date(obj.valueOf());
       } else if (typeof obj === 'object' && obj !== null) {
         return Object.keys(obj).reduce(
           function (res, e) {
@@ -309,7 +311,7 @@ __vue_render__._withStripped = true;
   /* style */
   var __vue_inject_styles__ = function (inject) {
     if (!inject) { return }
-    inject("data-v-03be2188_0", { source: ".mlvisjs-graph .graph-controls {\n  width: fit-content;\n}\n.mlvisjs-graph .graph-controls form {\n  padding: 0;\n}\n", map: {"version":3,"sources":["visjs-graph.vue"],"names":[],"mappings":"AAAA;EACE,kBAAkB;AACpB;AACA;EACE,UAAU;AACZ","file":"visjs-graph.vue","sourcesContent":[".mlvisjs-graph .graph-controls {\n  width: fit-content;\n}\n.mlvisjs-graph .graph-controls form {\n  padding: 0;\n}\n"]}, media: undefined });
+    inject("data-v-0ebb59c4_0", { source: ".mlvisjs-graph .graph-controls {\n  width: fit-content;\n}\n.mlvisjs-graph .graph-controls form {\n  padding: 0;\n}\n", map: {"version":3,"sources":["visjs-graph.vue"],"names":[],"mappings":"AAAA;EACE,kBAAkB;AACpB;AACA;EACE,UAAU;AACZ","file":"visjs-graph.vue","sourcesContent":[".mlvisjs-graph .graph-controls {\n  width: fit-content;\n}\n.mlvisjs-graph .graph-controls form {\n  padding: 0;\n}\n"]}, media: undefined });
 
   };
   /* scoped */
@@ -386,6 +388,8 @@ var script$1 = {
 
       if (Array.isArray(obj)) {
         return obj.map(function (item) { return this$1.observerClean(item); });
+      } else if (Object.prototype.toString.call(obj) === '[object Date]') {
+        return new Date(obj.valueOf());
       } else if (typeof obj === 'object' && obj !== null) {
         return Object.keys(obj).reduce(
           function (res, e) {

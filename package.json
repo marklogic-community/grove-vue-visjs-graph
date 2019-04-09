@@ -1,6 +1,6 @@
 {
   "name": "@marklogic-community/grove-vue-visjs-graph",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vue component to visualize RDF relationships and Timelines using Vis.js",
   "main": "dist/grove-vue-visjs-graph.umd.js",
   "module": "dist/grove-vue-visjs-graph.esm.js",
