@@ -8,7 +8,7 @@ The library is part of the MarkLogic Grove project, but could work in any Vue ap
 
 First, add the `grove-vue-visjs-graph` dependency via npm. (In a Grove Project, you will want to do this inside the `ui` directory.)
 
-    npm install --save git+https://project.marklogic.com/repo/scm/~gjosten/grove-vue-visjs-graph.git
+    npm install --save @marklogic-community/grove-vue-visjs-graph
 
 For now you also need to install ml-visjs-graph directly:
 
