@@ -62,6 +62,8 @@ export default {
     observerClean(obj) {
       if (Array.isArray(obj)) {
         return obj.map(item => this.observerClean(item));
+      } else if (Object.prototype.toString.call(obj) === '[object Date]') {
+        return new Date(obj.valueOf());
       } else if (typeof obj === 'object' && obj !== null) {
         return Object.keys(obj).reduce(
           (res, e) => Object.assign(res, { [e]: this.observerClean(obj[e]) }),
