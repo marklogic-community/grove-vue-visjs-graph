@@ -50,7 +50,7 @@
     "babel-preset-env": "^1.7.0",
     "canvas": "^2.3.1",
     "jest-environment-jsdom-thirteen": "^1.0.0",
-    "jsdom": "^13.2.0",
+    "jsdom": "^16.5.0",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
     "rollup": "^1.4.0",
